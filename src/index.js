@@ -1,5 +1,5 @@
 import vis from 'timeline-plus'
-import 'vis/dist/vis-timeline-graph2d.min.css'
+import 'timeline-plus/dist/timeline.css'
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import difference from 'lodash/difference'
