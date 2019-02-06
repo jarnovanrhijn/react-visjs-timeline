@@ -1,4 +1,4 @@
-import vis from 'timeline-plus'
+import * as vis from 'timeline-plus'
 import 'timeline-plus/dist/timeline.css'
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
@@ -24,6 +24,8 @@ const events = [
   'timechanged',
   'mouseOver',
   'mouseMove',
+  'mouseDown',
+  'mouseUp',
   'itemover',
   'itemout',
 ]
@@ -49,37 +51,83 @@ export default class Timeline extends Component {
   }
 
   componentDidMount() {
-    const { container } = this.refs
+    const { container } = this
 
-    this.$el = new vis.Timeline(container, undefined, this.props.options)
+    this.$el = new vis.Timeline(
+      container,
+      undefined,
+      undefined,
+      this.props.options
+    )
 
-    events.forEach(event => {
-      this.$el.on(event, this.props[`${event}Handler`])
-    })
-
-    this.init()
-  }
-
-  componentDidUpdate() {
     this.init()
   }
 
   shouldComponentUpdate(nextProps) {
-    const { items, groups, options, selection, customTimes } = this.props
+    const {
+      items,
+      groups,
+      options,
+      selection,
+      selectionOptions = {},
+      customTimes,
+    } = this.props
 
-    const itemsChange = items !== nextProps.items
-    const groupsChange = groups !== nextProps.groups
-    const optionsChange = options !== nextProps.options
-    const customTimesChange = customTimes !== nextProps.customTimes
-    const selectionChange = selection !== nextProps.selection
+    // if the items changed handle this manually. Avoids flickering in re-render
+    if (items !== nextProps.items) {
+      this.updateItems(nextProps.items)
+    }
+    // if the selection changed handle this manually. Allows users to more easily
+    // control the state of selected objects.
+    if (selection !== nextProps.selection) {
+      this.updateSelection(nextProps.selection, selectionOptions)
+    }
 
-    return (
-      itemsChange ||
-      groupsChange ||
-      optionsChange ||
-      customTimesChange ||
-      selectionChange
+    // if the window changed, handle this manually. Helps avoid flickering by
+    // unnecessary renders.
+    const oldStart = options.start
+    const oldEnd = options.end
+    const newStart = nextProps.options.start
+    const newEnd = nextProps.options.end
+
+    if (oldStart != newStart || oldEnd != newEnd) {
+      this.updateWindow(newStart, newEnd)
+    }
+
+    const groupsChange = groups != nextProps.groups
+    const optionsChange = !this.optionsAreEqual(options, nextProps.options)
+    const customTimesChange = !this.customTimesAreEqual(
+      customTimes,
+      nextProps.customTimes
     )
+
+    return groupsChange || optionsChange || customTimesChange
+  }
+
+  optionsAreEqual(options1, options2) {
+    return (
+      options1.template == options2.template ||
+      options1.horizontalScroll == options2.horizontalScroll ||
+      options1.maxHeight == options2.maxHeight ||
+      options1.minHeight == options2.minHeight ||
+      options1.showCurrentTime == options2.showCurrentTime ||
+      options1.width == options2.width ||
+      options1.zoomable == options2.zoomable
+    )
+  }
+
+  timeInArray(time, array) {
+    return (
+      array.filter(time2 => {
+        return time == time2
+      }).length > 0
+    )
+  }
+
+  customTimesAreEqual(timesArr1, timesArr2) {
+    return !Object.values(timesArr1).some(time1 => {
+      return !this.timeInArray(time1, Object.values(timesArr2))
+    })
   }
 
   init() {
@@ -96,14 +144,27 @@ export default class Timeline extends Component {
 
     let timelineOptions = options
 
+    // Remove any old handlers
+    each(this.oldHandlers, (event, handler) => this.$el.off(event, handler))
+
+    // Clear old handler map
+    this.oldHandlers = {}
+
+    // Install new handlers
+    events.forEach(event => {
+      const key = `${event}Handler`
+      const handler = this.props[key]
+      if (handler) {
+        this.$el.on(event, handler)
+        this.oldHandlers[key] = handler
+      }
+    })
+
     if (animate) {
       // If animate option is set, we should animate the timeline to any new
       // start/end values instead of jumping straight to them
       timelineOptions = omit(options, 'start', 'end')
-
-      this.$el.setWindow(options.start, options.end, {
-        animation: animate,
-      })
+      this.updateWindow(options.start, options.end)
     }
 
     this.$el.setOptions(timelineOptions)
@@ -114,8 +175,8 @@ export default class Timeline extends Component {
       this.$el.setGroups(groupsDataset)
     }
 
-    this.$el.setItems(items)
-    this.$el.setSelection(selection, selectionOptions)
+    this.updateItems(items)
+    this.updateSelection(selection, selectionOptions)
 
     if (currentTime) {
       this.$el.setCurrentTime(currentTime)
@@ -153,8 +214,26 @@ export default class Timeline extends Component {
     this.setState({ customTimes })
   }
 
+  updateItems(items) {
+    this.$el.setItems(items)
+  }
+
+  updateWindow(start, end) {
+    this.$el.setWindow(start, end, { animation: this.props.animate })
+  }
+
+  updateSelection(selection, selectionOptions = {}) {
+    this.$el.setSelection(selection, selectionOptions)
+  }
+
   render() {
-    return <div ref="container" />
+    return (
+      <div
+        ref={r => {
+          this.container = r
+        }}
+      />
+    )
   }
 }
 
@@ -163,7 +242,7 @@ Timeline.propTypes = assign(
     items: PropTypes.array,
     groups: PropTypes.array,
     options: PropTypes.object,
-    selection: PropTypes.array,
+    selection: PropTypes.oneOf([PropTypes.array, PropTypes.object]),
     customTimes: PropTypes.shape({
       datetime: PropTypes.instanceOf(Date),
       id: PropTypes.string,
