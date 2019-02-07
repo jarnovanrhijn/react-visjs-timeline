@@ -114,7 +114,7 @@ export default class Timeline extends Component {
 
     if (optionsChange) {
       const { start, end, ...rest } = nextProps.options
-      this.updateOptions(rest)
+      this.updateOptions({ ...options, ...rest })
     }
 
     const customTimesChange = !customTimesAreEqual(
