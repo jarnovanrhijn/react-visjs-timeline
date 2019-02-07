@@ -38,16 +38,17 @@ each(events, event => {
     (eventDefaultProps[`${event}Handler`] = noop)
 })
 
-function optionsAreEqual(options1, options2) {
+function optionsDiffer(options1, options2) {
   return (
-    options1.template === options2.template &&
-    options1.horizontalScroll === options2.horizontalScroll &&
-    options1.maxHeight === options2.maxHeight &&
-    options1.minHeight === options2.minHeight &&
-    options1.showCurrentTime === options2.showCurrentTime &&
-    options1.width === options2.width &&
-    options1.zoomable === options2.zoomable &&
-    options1.editable === options2.editable
+    options1.template !== options2.template ||
+    options1.horizontalScroll !== options2.horizontalScroll ||
+    options1.maxHeight !== options2.maxHeight ||
+    options1.minHeight !== options2.minHeight ||
+    options1.showCurrentTime !== options2.showCurrentTime ||
+    options1.width !== options2.width ||
+    options1.zoomable !== options2.zoomable ||
+    options1.editable !== options2.editable ||
+    options1.hiddenDates !== options2.hiddenDates
   )
 }
 
@@ -110,7 +111,7 @@ export default class Timeline extends Component {
     }
 
     const groupsChange = groups !== nextProps.groups
-    const optionsChange = !optionsAreEqual(options, nextProps.options)
+    const optionsChange = optionsDiffer(options, nextProps.options)
 
     if (optionsChange) {
       const { start, end, ...newOptions } = nextProps.options
