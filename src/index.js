@@ -52,13 +52,9 @@ export default class Timeline extends Component {
 
   componentDidMount() {
     const { container } = this
+    const { items, groups, options } = this.props
 
-    this.$el = new vis.Timeline(
-      container,
-      undefined,
-      undefined,
-      this.props.options
-    )
+    this.$el = new vis.Timeline(container, items, groups, options)
 
     this.init()
   }
@@ -106,20 +102,20 @@ export default class Timeline extends Component {
 
   optionsAreEqual(options1, options2) {
     return (
-      options1.template == options2.template ||
-      options1.horizontalScroll == options2.horizontalScroll ||
-      options1.maxHeight == options2.maxHeight ||
-      options1.minHeight == options2.minHeight ||
-      options1.showCurrentTime == options2.showCurrentTime ||
-      options1.width == options2.width ||
-      options1.zoomable == options2.zoomable
+      options1.template === options2.template &&
+      options1.horizontalScroll === options2.horizontalScroll &&
+      options1.maxHeight === options2.maxHeight &&
+      options1.minHeight === options2.minHeight &&
+      options1.showCurrentTime === options2.showCurrentTime &&
+      options1.width === options2.width &&
+      options1.zoomable === options2.zoomable
     )
   }
 
   timeInArray(time, array) {
     return (
       array.filter(time2 => {
-        return time == time2
+        return time === time2
       }).length > 0
     )
   }

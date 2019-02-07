@@ -174,13 +174,12 @@ var Timeline = (function(_Component) {
       key: 'componentDidMount',
       value: function componentDidMount() {
         var container = this.container
+        var _props = this.props,
+          items = _props.items,
+          groups = _props.groups,
+          options = _props.options
 
-        this.$el = new vis.Timeline(
-          container,
-          undefined,
-          undefined,
-          this.props.options
-        )
+        this.$el = new vis.Timeline(container, items, groups, options)
 
         this.init()
       },
@@ -188,15 +187,15 @@ var Timeline = (function(_Component) {
     {
       key: 'shouldComponentUpdate',
       value: function shouldComponentUpdate(nextProps) {
-        var _props = this.props,
-          items = _props.items,
-          groups = _props.groups,
-          options = _props.options,
-          selection = _props.selection,
-          _props$selectionOptio = _props.selectionOptions,
+        var _props2 = this.props,
+          items = _props2.items,
+          groups = _props2.groups,
+          options = _props2.options,
+          selection = _props2.selection,
+          _props2$selectionOpti = _props2.selectionOptions,
           selectionOptions =
-            _props$selectionOptio === undefined ? {} : _props$selectionOptio,
-          customTimes = _props.customTimes
+            _props2$selectionOpti === undefined ? {} : _props2$selectionOpti,
+          customTimes = _props2.customTimes
 
         // if the items changed handle this manually. Avoids flickering in re-render
 
@@ -269,18 +268,18 @@ var Timeline = (function(_Component) {
       value: function init() {
         var _this3 = this
 
-        var _props2 = this.props,
-          items = _props2.items,
-          groups = _props2.groups,
-          options = _props2.options,
-          selection = _props2.selection,
-          _props2$selectionOpti = _props2.selectionOptions,
+        var _props3 = this.props,
+          items = _props3.items,
+          groups = _props3.groups,
+          options = _props3.options,
+          selection = _props3.selection,
+          _props3$selectionOpti = _props3.selectionOptions,
           selectionOptions =
-            _props2$selectionOpti === undefined ? {} : _props2$selectionOpti,
-          customTimes = _props2.customTimes,
-          _props2$animate = _props2.animate,
-          animate = _props2$animate === undefined ? true : _props2$animate,
-          currentTime = _props2.currentTime
+            _props3$selectionOpti === undefined ? {} : _props3$selectionOpti,
+          customTimes = _props3.customTimes,
+          _props3$animate = _props3.animate,
+          animate = _props3$animate === undefined ? true : _props3$animate,
+          currentTime = _props3.currentTime
 
         var timelineOptions = options
 
