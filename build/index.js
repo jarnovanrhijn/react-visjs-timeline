@@ -271,12 +271,16 @@ var Timeline = (function(_Component) {
           var _nextProps$options = nextProps.options,
             start = _nextProps$options.start,
             end = _nextProps$options.end,
-            rest = _objectWithoutProperties(_nextProps$options, [
+            newOptions = _objectWithoutProperties(_nextProps$options, [
               'start',
               'end',
             ])
 
-          this.updateOptions(_extends({}, options, rest))
+          var prevStart = options.start,
+            prevEnd = options.end,
+            prevOptions = _objectWithoutProperties(options, ['start', 'end'])
+
+          this.updateOptions(_extends({}, prevOptions, newOptions))
         }
 
         var customTimesChange = !customTimesAreEqual(
