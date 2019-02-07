@@ -6,7 +6,7 @@
   "scripts": {
     "format": "prettier --write ./{src,examples}/**/*.js",
     "release": "node_modules/.bin/babel src --ignore *.test.js --out-dir build",
-    "precommit": "npm run build && lint-staged",
+    "precommit": "lint-staged",
     "prepublish": "npm run release",
     "build": "npm run release",
     "test": "echo \"Error: no test specified\" && exit 1"
