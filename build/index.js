@@ -233,13 +233,13 @@ var Timeline = (function(_Component) {
       key: 'optionsAreEqual',
       value: function optionsAreEqual(options1, options2) {
         return (
-          options1.template == options2.template ||
-          options1.horizontalScroll == options2.horizontalScroll ||
-          options1.maxHeight == options2.maxHeight ||
-          options1.minHeight == options2.minHeight ||
-          options1.showCurrentTime == options2.showCurrentTime ||
-          options1.width == options2.width ||
-          options1.zoomable == options2.zoomable
+          options1.template === options2.template &&
+          options1.horizontalScroll === options2.horizontalScroll &&
+          options1.maxHeight === options2.maxHeight &&
+          options1.minHeight === options2.minHeight &&
+          options1.showCurrentTime === options2.showCurrentTime &&
+          options1.width === options2.width &&
+          options1.zoomable === options2.zoomable
         )
       },
     },
@@ -248,7 +248,7 @@ var Timeline = (function(_Component) {
       value: function timeInArray(time, array) {
         return (
           array.filter(function(time2) {
-            return time == time2
+            return time === time2
           }).length > 0
         )
       },
