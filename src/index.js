@@ -46,7 +46,8 @@ function optionsAreEqual(options1, options2) {
     options1.minHeight === options2.minHeight &&
     options1.showCurrentTime === options2.showCurrentTime &&
     options1.width === options2.width &&
-    options1.zoomable === options2.zoomable
+    options1.zoomable === options2.zoomable &&
+    options1.editable === options2.editable
   )
 }
 
