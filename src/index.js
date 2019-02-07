@@ -38,16 +38,34 @@ each(events, event => {
     (eventDefaultProps[`${event}Handler`] = noop)
 })
 
+function optionsAreEqual(options1, options2) {
+  return (
+    options1.template === options2.template &&
+    options1.horizontalScroll === options2.horizontalScroll &&
+    options1.maxHeight === options2.maxHeight &&
+    options1.minHeight === options2.minHeight &&
+    options1.showCurrentTime === options2.showCurrentTime &&
+    options1.width === options2.width &&
+    options1.zoomable === options2.zoomable
+  )
+}
+
+function timeInArray(time, array) {
+  return array.filter(time2 => time === time2).length > 0
+}
+
+function customTimesAreEqual(timesArr1, timesArr2) {
+  return !Object.values(timesArr1).some(
+    time1 => !timeInArray(time1, Object.values(timesArr2))
+  )
+}
+
 export default class Timeline extends Component {
   constructor(props) {
     super(props)
     this.state = {
       customTimes: [],
     }
-  }
-
-  componentWillUnmount() {
-    this.$el.destroy()
   }
 
   componentDidMount() {
@@ -86,13 +104,19 @@ export default class Timeline extends Component {
     const newStart = nextProps.options.start
     const newEnd = nextProps.options.end
 
-    if (oldStart != newStart || oldEnd != newEnd) {
+    if (oldStart !== newStart || oldEnd !== newEnd) {
       this.updateWindow(newStart, newEnd)
     }
 
-    const groupsChange = groups != nextProps.groups
-    const optionsChange = !this.optionsAreEqual(options, nextProps.options)
-    const customTimesChange = !this.customTimesAreEqual(
+    const groupsChange = groups !== nextProps.groups
+    const optionsChange = !optionsAreEqual(options, nextProps.options)
+
+    if (optionsChange) {
+      const { start, end, ...rest } = nextProps.options
+      this.updateOptions(rest)
+    }
+
+    const customTimesChange = !customTimesAreEqual(
       customTimes,
       nextProps.customTimes
     )
@@ -100,30 +124,8 @@ export default class Timeline extends Component {
     return groupsChange || optionsChange || customTimesChange
   }
 
-  optionsAreEqual(options1, options2) {
-    return (
-      options1.template === options2.template &&
-      options1.horizontalScroll === options2.horizontalScroll &&
-      options1.maxHeight === options2.maxHeight &&
-      options1.minHeight === options2.minHeight &&
-      options1.showCurrentTime === options2.showCurrentTime &&
-      options1.width === options2.width &&
-      options1.zoomable === options2.zoomable
-    )
-  }
-
-  timeInArray(time, array) {
-    return (
-      array.filter(time2 => {
-        return time === time2
-      }).length > 0
-    )
-  }
-
-  customTimesAreEqual(timesArr1, timesArr2) {
-    return !Object.values(timesArr1).some(time1 => {
-      return !this.timeInArray(time1, Object.values(timesArr2))
-    })
+  componentWillUnmount() {
+    this.$el.destroy()
   }
 
   init() {
@@ -220,6 +222,10 @@ export default class Timeline extends Component {
 
   updateSelection(selection, selectionOptions = {}) {
     this.$el.setSelection(selection, selectionOptions)
+  }
+
+  updateOptions(options) {
+    this.$el.setOptions(options)
   }
 
   render() {

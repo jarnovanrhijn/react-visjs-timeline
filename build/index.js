@@ -79,6 +79,16 @@ function _interopRequireWildcard(obj) {
   }
 }
 
+function _objectWithoutProperties(obj, keys) {
+  var target = {}
+  for (var i in obj) {
+    if (keys.indexOf(i) >= 0) continue
+    if (!Object.prototype.hasOwnProperty.call(obj, i)) continue
+    target[i] = obj[i]
+  }
+  return target
+}
+
 function _classCallCheck(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError('Cannot call a class as a function')
@@ -146,6 +156,32 @@ var eventDefaultProps = {}
     (eventDefaultProps[event + 'Handler'] = noop)
 })
 
+function optionsAreEqual(options1, options2) {
+  return (
+    options1.template === options2.template &&
+    options1.horizontalScroll === options2.horizontalScroll &&
+    options1.maxHeight === options2.maxHeight &&
+    options1.minHeight === options2.minHeight &&
+    options1.showCurrentTime === options2.showCurrentTime &&
+    options1.width === options2.width &&
+    options1.zoomable === options2.zoomable
+  )
+}
+
+function timeInArray(time, array) {
+  return (
+    array.filter(function(time2) {
+      return time === time2
+    }).length > 0
+  )
+}
+
+function customTimesAreEqual(timesArr1, timesArr2) {
+  return !Object.values(timesArr1).some(function(time1) {
+    return !timeInArray(time1, Object.values(timesArr2))
+  })
+}
+
 var Timeline = (function(_Component) {
   _inherits(Timeline, _Component)
 
@@ -164,12 +200,6 @@ var Timeline = (function(_Component) {
   }
 
   _createClass(Timeline, [
-    {
-      key: 'componentWillUnmount',
-      value: function componentWillUnmount() {
-        this.$el.destroy()
-      },
-    },
     {
       key: 'componentDidMount',
       value: function componentDidMount() {
@@ -215,13 +245,26 @@ var Timeline = (function(_Component) {
         var newStart = nextProps.options.start
         var newEnd = nextProps.options.end
 
-        if (oldStart != newStart || oldEnd != newEnd) {
+        if (oldStart !== newStart || oldEnd !== newEnd) {
           this.updateWindow(newStart, newEnd)
         }
 
-        var groupsChange = groups != nextProps.groups
-        var optionsChange = !this.optionsAreEqual(options, nextProps.options)
-        var customTimesChange = !this.customTimesAreEqual(
+        var groupsChange = groups !== nextProps.groups
+        var optionsChange = !optionsAreEqual(options, nextProps.options)
+
+        if (optionsChange) {
+          var _nextProps$options = nextProps.options,
+            start = _nextProps$options.start,
+            end = _nextProps$options.end,
+            rest = _objectWithoutProperties(_nextProps$options, [
+              'start',
+              'end',
+            ])
+
+          this.updateOptions(rest)
+        }
+
+        var customTimesChange = !customTimesAreEqual(
           customTimes,
           nextProps.customTimes
         )
@@ -230,43 +273,15 @@ var Timeline = (function(_Component) {
       },
     },
     {
-      key: 'optionsAreEqual',
-      value: function optionsAreEqual(options1, options2) {
-        return (
-          options1.template === options2.template &&
-          options1.horizontalScroll === options2.horizontalScroll &&
-          options1.maxHeight === options2.maxHeight &&
-          options1.minHeight === options2.minHeight &&
-          options1.showCurrentTime === options2.showCurrentTime &&
-          options1.width === options2.width &&
-          options1.zoomable === options2.zoomable
-        )
-      },
-    },
-    {
-      key: 'timeInArray',
-      value: function timeInArray(time, array) {
-        return (
-          array.filter(function(time2) {
-            return time === time2
-          }).length > 0
-        )
-      },
-    },
-    {
-      key: 'customTimesAreEqual',
-      value: function customTimesAreEqual(timesArr1, timesArr2) {
-        var _this2 = this
-
-        return !Object.values(timesArr1).some(function(time1) {
-          return !_this2.timeInArray(time1, Object.values(timesArr2))
-        })
+      key: 'componentWillUnmount',
+      value: function componentWillUnmount() {
+        this.$el.destroy()
       },
     },
     {
       key: 'init',
       value: function init() {
-        var _this3 = this
+        var _this2 = this
 
         var _props3 = this.props,
           items = _props3.items,
@@ -285,7 +300,7 @@ var Timeline = (function(_Component) {
 
         // Remove any old handlers
         ;(0, _each2.default)(this.oldHandlers, function(event, handler) {
-          return _this3.$el.off(event, handler)
+          return _this2.$el.off(event, handler)
         })
 
         // Clear old handler map
@@ -294,10 +309,10 @@ var Timeline = (function(_Component) {
         // Install new handlers
         events.forEach(function(event) {
           var key = event + 'Handler'
-          var handler = _this3.props[key]
+          var handler = _this2.props[key]
           if (handler) {
-            _this3.$el.on(event, handler)
-            _this3.oldHandlers[key] = handler
+            _this2.$el.on(event, handler)
+            _this2.oldHandlers[key] = handler
           }
         })
 
@@ -342,15 +357,15 @@ var Timeline = (function(_Component) {
         // NOTE this has to be in arrow function so context of `this` is based on
         // this.$el and not `each`
         ;(0, _each2.default)(customTimeKeysToRemove, function(id) {
-          return _this3.$el.removeCustomTime(id)
+          return _this2.$el.removeCustomTime(id)
         })
         ;(0, _each2.default)(customTimeKeysToAdd, function(id) {
           var datetime = customTimes[id]
-          _this3.$el.addCustomTime(datetime, id)
+          _this2.$el.addCustomTime(datetime, id)
         })
         ;(0, _each2.default)(customTimeKeysToUpdate, function(id) {
           var datetime = customTimes[id]
-          _this3.$el.setCustomTime(datetime, id)
+          _this2.$el.setCustomTime(datetime, id)
         })
 
         // store new customTimes in state for future diff
@@ -379,13 +394,19 @@ var Timeline = (function(_Component) {
       },
     },
     {
+      key: 'updateOptions',
+      value: function updateOptions(options) {
+        this.$el.setOptions(options)
+      },
+    },
+    {
       key: 'render',
       value: function render() {
-        var _this4 = this
+        var _this3 = this
 
         return _react2.default.createElement('div', {
           ref: function ref(r) {
-            _this4.container = r
+            _this3.container = r
           },
         })
       },
