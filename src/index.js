@@ -90,7 +90,7 @@ export default class Timeline extends Component {
     } = this.props
 
     // if the items changed handle this manually. Avoids flickering in re-render
-    if (items !== nextProps.items) {
+    if (items.length !== nextProps.items.length) {
       this.updateItems(nextProps.items)
     }
     // if the selection changed handle this manually. Allows users to more easily
@@ -116,7 +116,10 @@ export default class Timeline extends Component {
     if (optionsChange) {
       const { start, end, ...newOptions } = nextProps.options
       const { start: prevStart, end: prevEnd, ...prevOptions } = options
-      this.updateOptions({ ...prevOptions, ...newOptions })
+      this.updateOptions({
+        ...prevOptions,
+        ...newOptions,
+      })
     }
 
     const customTimesChange = !customTimesAreEqual(
@@ -212,7 +215,9 @@ export default class Timeline extends Component {
     })
 
     // store new customTimes in state for future diff
-    this.setState({ customTimes })
+    this.setState({
+      customTimes,
+    })
   }
 
   updateItems(items) {
@@ -220,7 +225,9 @@ export default class Timeline extends Component {
   }
 
   updateWindow(start, end) {
-    this.$el.setWindow(start, end, { animation: this.props.animate })
+    this.$el.setWindow(start, end, {
+      animation: this.props.animate,
+    })
   }
 
   updateSelection(selection, selectionOptions = {}) {
