@@ -98,12 +98,6 @@ export default class Timeline extends Component {
     if (selection !== nextProps.selection) {
       this.updateSelection(nextProps.selection, selectionOptions)
     }
-
-    // If the groups change, re-render them
-    if (groupsChange) {
-      this.updateGroups(nextProps.groups)
-    }
-
     // if the window changed, handle this manually. Helps avoid flickering by
     // unnecessary renders.
     const oldStart = options.start
@@ -117,6 +111,11 @@ export default class Timeline extends Component {
 
     const groupsChange = groups !== nextProps.groups
     const optionsChange = optionsDiffer(options, nextProps.options)
+
+    // If the groups change, re-render them
+    if (groupsChange) {
+      this.updateGroups(nextProps.groups)
+    }
 
     if (optionsChange) {
       const { start, end, ...newOptions } = nextProps.options
