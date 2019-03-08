@@ -245,13 +245,18 @@ var Timeline = (function(_Component) {
 
         // if the items changed handle this manually. Avoids flickering in re-render
 
-        if (items !== nextProps.items) {
+        if (items.length !== nextProps.items.length) {
           this.updateItems(nextProps.items)
         }
         // if the selection changed handle this manually. Allows users to more easily
         // control the state of selected objects.
         if (selection !== nextProps.selection) {
           this.updateSelection(nextProps.selection, selectionOptions)
+        }
+
+        // If the groups change, re-render them
+        if (groupsChange) {
+          this.updateGroups(nextProps.groups)
         }
 
         // if the window changed, handle this manually. Helps avoid flickering by
@@ -389,7 +394,9 @@ var Timeline = (function(_Component) {
         })
 
         // store new customTimes in state for future diff
-        this.setState({ customTimes: customTimes })
+        this.setState({
+          customTimes: customTimes,
+        })
       },
     },
     {
@@ -401,7 +408,9 @@ var Timeline = (function(_Component) {
     {
       key: 'updateWindow',
       value: function updateWindow(start, end) {
-        this.$el.setWindow(start, end, { animation: this.props.animate })
+        this.$el.setWindow(start, end, {
+          animation: this.props.animate,
+        })
       },
     },
     {
@@ -411,6 +420,12 @@ var Timeline = (function(_Component) {
           arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {}
 
         this.$el.setSelection(selection, selectionOptions)
+      },
+    },
+    {
+      key: 'updateGroups',
+      value: function updateGroups(groups) {
+        this.$el.setGroups(groups)
       },
     },
     {
