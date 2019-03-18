@@ -89,34 +89,37 @@ export default class Timeline extends Component {
       customTimes,
     } = this.props
 
+    const itemsChanged = items !== nextProps.items
+    const oldStart = options.start
+    const oldEnd = options.end
+    const newStart = nextProps.options.start
+    const newEnd = nextProps.options.end
+    const groupsChange = groups !== nextProps.groups
+    const optionsChange = optionsDiffer(options, nextProps.options)
+
     // if the items changed handle this manually. Avoids flickering in re-render
-    if (items.length !== nextProps.items.length) {
+    if (itemsChanged) {
       this.updateItems(nextProps.items)
     }
+
     // if the selection changed handle this manually. Allows users to more easily
     // control the state of selected objects.
     if (selection !== nextProps.selection) {
       this.updateSelection(nextProps.selection, selectionOptions)
     }
+
     // if the window changed, handle this manually. Helps avoid flickering by
     // unnecessary renders.
-    const oldStart = options.start
-    const oldEnd = options.end
-    const newStart = nextProps.options.start
-    const newEnd = nextProps.options.end
-
     if (oldStart !== newStart || oldEnd !== newEnd) {
       this.updateWindow(newStart, newEnd)
     }
-
-    const groupsChange = groups !== nextProps.groups
-    const optionsChange = optionsDiffer(options, nextProps.options)
 
     // If the groups change, re-render them
     if (groupsChange) {
       this.updateGroups(nextProps.groups)
     }
 
+    // If options change, update options.
     if (optionsChange) {
       const { start, end, ...newOptions } = nextProps.options
       const { start: prevStart, end: prevEnd, ...prevOptions } = options
@@ -131,7 +134,7 @@ export default class Timeline extends Component {
       nextProps.customTimes
     )
 
-    return groupsChange || optionsChange || customTimesChange
+    return customTimesChange
   }
 
   componentWillUnmount() {

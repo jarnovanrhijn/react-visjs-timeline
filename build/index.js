@@ -243,9 +243,16 @@ var Timeline = (function(_Component) {
             _props2$selectionOpti === undefined ? {} : _props2$selectionOpti,
           customTimes = _props2.customTimes
 
-        // if the items changed handle this manually. Avoids flickering in re-render
+        var itemsChanged = items !== nextProps.items
+        var oldStart = options.start
+        var oldEnd = options.end
+        var newStart = nextProps.options.start
+        var newEnd = nextProps.options.end
+        var groupsChange = groups !== nextProps.groups
+        var optionsChange = optionsDiffer(options, nextProps.options)
 
-        if (items.length !== nextProps.items.length) {
+        // if the items changed handle this manually. Avoids flickering in re-render
+        if (itemsChanged) {
           this.updateItems(nextProps.items)
         }
         // if the selection changed handle this manually. Allows users to more easily
@@ -254,24 +261,16 @@ var Timeline = (function(_Component) {
           this.updateSelection(nextProps.selection, selectionOptions)
         }
 
-        // If the groups change, re-render them
-        if (groupsChange) {
-          this.updateGroups(nextProps.groups)
-        }
-
         // if the window changed, handle this manually. Helps avoid flickering by
         // unnecessary renders.
-        var oldStart = options.start
-        var oldEnd = options.end
-        var newStart = nextProps.options.start
-        var newEnd = nextProps.options.end
-
         if (oldStart !== newStart || oldEnd !== newEnd) {
           this.updateWindow(newStart, newEnd)
         }
 
-        var groupsChange = groups !== nextProps.groups
-        var optionsChange = optionsDiffer(options, nextProps.options)
+        // If the groups change, re-render them
+        if (groupsChange) {
+          this.updateGroups(nextProps.groups)
+        }
 
         if (optionsChange) {
           var _nextProps$options = nextProps.options,
@@ -294,7 +293,7 @@ var Timeline = (function(_Component) {
           nextProps.customTimes
         )
 
-        return groupsChange || optionsChange || customTimesChange
+        return optionsChange || customTimesChange
       },
     },
     {
