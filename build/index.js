@@ -255,6 +255,7 @@ var Timeline = (function(_Component) {
         if (itemsChanged) {
           this.updateItems(nextProps.items)
         }
+
         // if the selection changed handle this manually. Allows users to more easily
         // control the state of selected objects.
         if (selection !== nextProps.selection) {
@@ -272,6 +273,7 @@ var Timeline = (function(_Component) {
           this.updateGroups(nextProps.groups)
         }
 
+        // If options change, update options.
         if (optionsChange) {
           var _nextProps$options = nextProps.options,
             start = _nextProps$options.start,
@@ -293,7 +295,7 @@ var Timeline = (function(_Component) {
           nextProps.customTimes
         )
 
-        return optionsChange || customTimesChange
+        return customTimesChange
       },
     },
     {
