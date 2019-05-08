@@ -33,6 +33,10 @@ const events = [
 const eventPropTypes = {}
 const eventDefaultProps = {}
 
+function isEqual(a, b) {
+  return JSON.stringify(a) === JSON.stringify(b)
+}
+
 each(events, event => {
   ;(eventPropTypes[event] = PropTypes.func),
     (eventDefaultProps[`${event}Handler`] = noop)
@@ -89,12 +93,12 @@ export default class Timeline extends Component {
       customTimes,
     } = this.props
 
-    const itemsChanged = items !== nextProps.items
+    const itemsChanged = !isEqual(items, nextProps.items)
     const oldStart = options.start
     const oldEnd = options.end
     const newStart = nextProps.options.start
     const newEnd = nextProps.options.end
-    const groupsChange = groups !== nextProps.groups
+    const groupsChange = !isEqual(groups, nextProps.groups)
     const optionsChange = optionsDiffer(options, nextProps.options)
 
     // if the items changed handle this manually. Avoids flickering in re-render
@@ -104,7 +108,7 @@ export default class Timeline extends Component {
 
     // if the selection changed handle this manually. Allows users to more easily
     // control the state of selected objects.
-    if (selection !== nextProps.selection) {
+    if (!isEqual(selection, nextProps.selection)) {
       this.updateSelection(nextProps.selection, selectionOptions)
     }
 

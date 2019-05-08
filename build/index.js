@@ -165,6 +165,10 @@ var events = [
 var eventPropTypes = {}
 var eventDefaultProps = {}
 
+function isEqual(a, b) {
+  return JSON.stringify(a) === JSON.stringify(b)
+}
+
 ;(0, _each2.default)(events, function(event) {
   ;(eventPropTypes[event] = _propTypes2.default.func),
     (eventDefaultProps[event + 'Handler'] = noop)
@@ -243,12 +247,12 @@ var Timeline = (function(_Component) {
             _props2$selectionOpti === undefined ? {} : _props2$selectionOpti,
           customTimes = _props2.customTimes
 
-        var itemsChanged = items !== nextProps.items
+        var itemsChanged = !isEqual(items, nextProps.items)
         var oldStart = options.start
         var oldEnd = options.end
         var newStart = nextProps.options.start
         var newEnd = nextProps.options.end
-        var groupsChange = groups !== nextProps.groups
+        var groupsChange = !isEqual(groups, nextProps.groups)
         var optionsChange = optionsDiffer(options, nextProps.options)
 
         // if the items changed handle this manually. Avoids flickering in re-render
@@ -258,7 +262,7 @@ var Timeline = (function(_Component) {
 
         // if the selection changed handle this manually. Allows users to more easily
         // control the state of selected objects.
-        if (selection !== nextProps.selection) {
+        if (!isEqual(selection, nextProps.selection)) {
           this.updateSelection(nextProps.selection, selectionOptions)
         }
 
