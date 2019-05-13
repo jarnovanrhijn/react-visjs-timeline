@@ -4,6 +4,7 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import difference from 'lodash/difference'
 import intersection from 'lodash/intersection'
+import isEqual from 'lodash/isEqual'
 import each from 'lodash/each'
 import assign from 'lodash/assign'
 import omit from 'lodash/omit'
@@ -32,10 +33,6 @@ const events = [
 
 const eventPropTypes = {}
 const eventDefaultProps = {}
-
-function isEqual(a, b) {
-  return JSON.stringify(a) === JSON.stringify(b)
-}
 
 each(events, event => {
   ;(eventPropTypes[event] = PropTypes.func),
