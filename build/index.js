@@ -39,6 +39,8 @@ var _timelinePlus = require('timeline-plus')
 
 var vis = _interopRequireWildcard(_timelinePlus)
 
+require('timeline-plus/dist/timeline.css')
+
 var _react = require('react')
 
 var _react2 = _interopRequireDefault(_react)
@@ -58,14 +60,6 @@ var _intersection2 = _interopRequireDefault(_intersection)
 var _isEqual = require('lodash/isEqual')
 
 var _isEqual2 = _interopRequireDefault(_isEqual)
-
-var _each = require('lodash/each')
-
-var _each2 = _interopRequireDefault(_each)
-
-var _assign = require('lodash/assign')
-
-var _assign2 = _interopRequireDefault(_assign)
 
 var _omit = require('lodash/omit')
 
@@ -167,9 +161,9 @@ var events = [
 var eventPropTypes = {}
 var eventDefaultProps = {}
 
-;(0, _each2.default)(events, function(event) {
-  ;(eventPropTypes[event] = _propTypes2.default.func),
-    (eventDefaultProps[event + 'Handler'] = noop)
+events.forEach(function(event) {
+  eventPropTypes[event] = _propTypes2.default.func
+  eventDefaultProps[event + 'Handler'] = noop
 })
 
 function optionsDiffer(options1, options2) {
@@ -214,6 +208,8 @@ var Timeline = (function(_Component) {
     _this.state = {
       customTimes: [],
     }
+
+    _this.container = _react2.default.createRef()
     return _this
   }
 
@@ -227,7 +223,7 @@ var Timeline = (function(_Component) {
           groups = _props.groups,
           options = _props.options
 
-        this.$el = new vis.Timeline(container, items, groups, options)
+        this.$el = new vis.Timeline(container.current, items, groups, options)
 
         this.init()
       },
@@ -330,9 +326,11 @@ var Timeline = (function(_Component) {
         var timelineOptions = options
 
         // Remove any old handlers
-        ;(0, _each2.default)(this.oldHandlers, function(event, handler) {
-          return _this2.$el.off(event, handler)
-        })
+        if (this.oldHandlers) {
+          this.oldHandlers.forEach(function(event, handler) {
+            return _this2.$el.off(event, handler)
+          })
+        }
 
         // Clear old handler map
         this.oldHandlers = {}
@@ -376,6 +374,7 @@ var Timeline = (function(_Component) {
           customTimeKeysNew,
           customTimeKeysPrev
         )
+
         var customTimeKeysToRemove = (0, _difference2.default)(
           customTimeKeysPrev,
           customTimeKeysNew
@@ -387,14 +386,15 @@ var Timeline = (function(_Component) {
 
         // NOTE this has to be in arrow function so context of `this` is based on
         // this.$el and not `each`
-        ;(0, _each2.default)(customTimeKeysToRemove, function(id) {
+        customTimeKeysToRemove.forEach(function(id) {
           return _this2.$el.removeCustomTime(id)
         })
-        ;(0, _each2.default)(customTimeKeysToAdd, function(id) {
+
+        customTimeKeysToAdd.forEach(function(id) {
           var datetime = customTimes[id]
           _this2.$el.addCustomTime(datetime, id)
         })
-        ;(0, _each2.default)(customTimeKeysToUpdate, function(id) {
+        customTimeKeysToUpdate.forEach(function(id) {
           var datetime = customTimes[id]
           _this2.$el.setCustomTime(datetime, id)
         })
@@ -421,7 +421,9 @@ var Timeline = (function(_Component) {
     },
     {
       key: 'updateSelection',
-      value: function updateSelection(selection) {
+      value: function updateSelection() {
+        var selection =
+          arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : []
         var selectionOptions =
           arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {}
 
@@ -443,13 +445,7 @@ var Timeline = (function(_Component) {
     {
       key: 'render',
       value: function render() {
-        var _this3 = this
-
-        return _react2.default.createElement('div', {
-          ref: function ref(r) {
-            _this3.container = r
-          },
-        })
+        return _react2.default.createElement('div', { ref: this.container })
       },
     },
   ])
@@ -459,11 +455,11 @@ var Timeline = (function(_Component) {
 
 exports.default = Timeline
 
-Timeline.propTypes = (0, _assign2.default)(
+Timeline.propTypes = _extends(
   {
-    items: _propTypes2.default.array,
-    groups: _propTypes2.default.array,
-    options: _propTypes2.default.object,
+    items: _propTypes2.default.arrayOf(_propTypes2.default.object),
+    groups: _propTypes2.default.arrayOf(_propTypes2.default.object),
+    options: _propTypes2.default.objectOf(_propTypes2.default.any),
     selection: _propTypes2.default.oneOf([
       _propTypes2.default.array,
       _propTypes2.default.object,
@@ -485,7 +481,7 @@ Timeline.propTypes = (0, _assign2.default)(
   eventPropTypes
 )
 
-Timeline.defaultProps = (0, _assign2.default)(
+Timeline.defaultProps = _extends(
   {
     items: [],
     groups: [],

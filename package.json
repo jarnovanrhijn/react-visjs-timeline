@@ -1,6 +1,6 @@
 {
   "name": "react-visjs-timeline",
-  "version": "1.6.2",
+  "version": "1.6.3",
   "description": "React component for the vis.js timeline module",
   "main": "build/index.js",
   "scripts": {
@@ -19,14 +19,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Lighthouse-io/react-visjs-timeline.git"
+    "url": "git+https://github.com/jarnovanrhijn/react-visjs-timeline.git"
   },
   "author": "willmcclellan",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Lighthouse-io/react-visjs-timeline/issues"
+    "url": "https://github.com/jarnovanrhijn/react-visjs-timeline/issues"
   },
-  "homepage": "https://github.com/Lighthouse-io/react-visjs-timeline#readme",
+  "homepage": "https://github.com/jarnovanrhijn/react-visjs-timeline#readme",
   "devDependencies": {
     "babel-cli": "^6.24.1",
     "babel-plugin-transform-es2015-destructuring": "^6.23.0",
@@ -40,7 +40,7 @@
     "prettier": "1.11.1"
   },
   "dependencies": {
-    "lodash": "^4.17.4"
+    "lodash": "^4.17.11"
   },
   "peerDependencies": {
     "prop-types": "^15.0 || ^16.0",

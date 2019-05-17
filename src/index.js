@@ -1,11 +1,10 @@
 import * as vis from 'timeline-plus'
+import 'timeline-plus/dist/timeline.css'
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import difference from 'lodash/difference'
 import intersection from 'lodash/intersection'
 import isEqual from 'lodash/isEqual'
-import each from 'lodash/each'
-import assign from 'lodash/assign'
 import omit from 'lodash/omit'
 import keys from 'lodash/keys'
 
@@ -33,9 +32,9 @@ const events = [
 const eventPropTypes = {}
 const eventDefaultProps = {}
 
-each(events, event => {
-  ;(eventPropTypes[event] = PropTypes.func),
-    (eventDefaultProps[`${event}Handler`] = noop)
+events.forEach(event => {
+  eventPropTypes[event] = PropTypes.func
+  eventDefaultProps[`${event}Handler`] = noop
 })
 
 function optionsDiffer(options1, options2) {
@@ -68,13 +67,15 @@ export default class Timeline extends Component {
     this.state = {
       customTimes: [],
     }
+
+    this.container = React.createRef()
   }
 
   componentDidMount() {
     const { container } = this
     const { items, groups, options } = this.props
 
-    this.$el = new vis.Timeline(container, items, groups, options)
+    this.$el = new vis.Timeline(container.current, items, groups, options)
 
     this.init()
   }
@@ -156,7 +157,9 @@ export default class Timeline extends Component {
     let timelineOptions = options
 
     // Remove any old handlers
-    each(this.oldHandlers, (event, handler) => this.$el.off(event, handler))
+    if (this.oldHandlers) {
+      this.oldHandlers.forEach((event, handler) => this.$el.off(event, handler))
+    }
 
     // Clear old handler map
     this.oldHandlers = {}
@@ -200,6 +203,7 @@ export default class Timeline extends Component {
       customTimeKeysNew,
       customTimeKeysPrev
     )
+
     const customTimeKeysToRemove = difference(
       customTimeKeysPrev,
       customTimeKeysNew
@@ -211,12 +215,13 @@ export default class Timeline extends Component {
 
     // NOTE this has to be in arrow function so context of `this` is based on
     // this.$el and not `each`
-    each(customTimeKeysToRemove, id => this.$el.removeCustomTime(id))
-    each(customTimeKeysToAdd, id => {
+    customTimeKeysToRemove.forEach(id => this.$el.removeCustomTime(id))
+
+    customTimeKeysToAdd.forEach(id => {
       const datetime = customTimes[id]
       this.$el.addCustomTime(datetime, id)
     })
-    each(customTimeKeysToUpdate, id => {
+    customTimeKeysToUpdate.forEach(id => {
       const datetime = customTimes[id]
       this.$el.setCustomTime(datetime, id)
     })
@@ -237,7 +242,7 @@ export default class Timeline extends Component {
     })
   }
 
-  updateSelection(selection, selectionOptions = {}) {
+  updateSelection(selection = [], selectionOptions = {}) {
     this.$el.setSelection(selection, selectionOptions)
   }
 
@@ -250,43 +255,33 @@ export default class Timeline extends Component {
   }
 
   render() {
-    return (
-      <div
-        ref={r => {
-          this.container = r
-        }}
-      />
-    )
+    return <div ref={this.container} />
   }
 }
 
-Timeline.propTypes = assign(
-  {
-    items: PropTypes.array,
-    groups: PropTypes.array,
-    options: PropTypes.object,
-    selection: PropTypes.oneOf([PropTypes.array, PropTypes.object]),
-    customTimes: PropTypes.shape({
-      datetime: PropTypes.instanceOf(Date),
-      id: PropTypes.string,
-    }),
-    animate: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
-    currentTime: PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.instanceOf(Date),
-      PropTypes.number,
-    ]),
-  },
-  eventPropTypes
-)
+Timeline.propTypes = {
+  items: PropTypes.arrayOf(PropTypes.object),
+  groups: PropTypes.arrayOf(PropTypes.object),
+  options: PropTypes.objectOf(PropTypes.any),
+  selection: PropTypes.oneOf([PropTypes.array, PropTypes.object]),
+  customTimes: PropTypes.shape({
+    datetime: PropTypes.instanceOf(Date),
+    id: PropTypes.string,
+  }),
+  animate: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
+  currentTime: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.instanceOf(Date),
+    PropTypes.number,
+  ]),
+  ...eventPropTypes,
+}
 
-Timeline.defaultProps = assign(
-  {
-    items: [],
-    groups: [],
-    options: {},
-    selection: [],
-    customTimes: {},
-  },
-  eventDefaultProps
-)
+Timeline.defaultProps = {
+  items: [],
+  groups: [],
+  options: {},
+  selection: [],
+  customTimes: {},
+  ...eventDefaultProps,
+}
