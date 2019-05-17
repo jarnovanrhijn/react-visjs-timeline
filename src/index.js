@@ -1,5 +1,4 @@
 import * as vis from 'timeline-plus'
-import 'timeline-plus/dist/timeline.css'
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import difference from 'lodash/difference'
@@ -90,7 +89,7 @@ export default class Timeline extends Component {
       customTimes,
     } = this.props
 
-    const itemsChanged = !isEqual(items, nextProps.items)
+    const itemsChanged = !isEqual(items.sort(), nextProps.items.sort())
     const oldStart = options.start
     const oldEnd = options.end
     const newStart = nextProps.options.start

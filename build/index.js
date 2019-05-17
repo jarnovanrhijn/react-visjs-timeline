@@ -39,8 +39,6 @@ var _timelinePlus = require('timeline-plus')
 
 var vis = _interopRequireWildcard(_timelinePlus)
 
-require('timeline-plus/dist/timeline.css')
-
 var _react = require('react')
 
 var _react2 = _interopRequireDefault(_react)
@@ -56,6 +54,10 @@ var _difference2 = _interopRequireDefault(_difference)
 var _intersection = require('lodash/intersection')
 
 var _intersection2 = _interopRequireDefault(_intersection)
+
+var _isEqual = require('lodash/isEqual')
+
+var _isEqual2 = _interopRequireDefault(_isEqual)
 
 var _each = require('lodash/each')
 
@@ -165,10 +167,6 @@ var events = [
 var eventPropTypes = {}
 var eventDefaultProps = {}
 
-function isEqual(a, b) {
-  return JSON.stringify(a) === JSON.stringify(b)
-}
-
 ;(0, _each2.default)(events, function(event) {
   ;(eventPropTypes[event] = _propTypes2.default.func),
     (eventDefaultProps[event + 'Handler'] = noop)
@@ -247,12 +245,15 @@ var Timeline = (function(_Component) {
             _props2$selectionOpti === undefined ? {} : _props2$selectionOpti,
           customTimes = _props2.customTimes
 
-        var itemsChanged = !isEqual(items, nextProps.items)
+        var itemsChanged = !(0, _isEqual2.default)(
+          items.sort(),
+          nextProps.items.sort()
+        )
         var oldStart = options.start
         var oldEnd = options.end
         var newStart = nextProps.options.start
         var newEnd = nextProps.options.end
-        var groupsChange = !isEqual(groups, nextProps.groups)
+        var groupsChange = !(0, _isEqual2.default)(groups, nextProps.groups)
         var optionsChange = optionsDiffer(options, nextProps.options)
 
         // if the items changed handle this manually. Avoids flickering in re-render
@@ -262,7 +263,7 @@ var Timeline = (function(_Component) {
 
         // if the selection changed handle this manually. Allows users to more easily
         // control the state of selected objects.
-        if (!isEqual(selection, nextProps.selection)) {
+        if (!(0, _isEqual2.default)(selection, nextProps.selection)) {
           this.updateSelection(nextProps.selection, selectionOptions)
         }
 
