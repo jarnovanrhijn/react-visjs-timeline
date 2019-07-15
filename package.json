@@ -1,6 +1,6 @@
 {
   "name": "react-visjs-timeline",
-  "version": "1.6.3",
+  "version": "1.6.4",
   "description": "React component for the vis.js timeline module",
   "main": "build/index.js",
   "scripts": {
@@ -47,6 +47,6 @@
     "react": "^0.14 || ^15.0 || ^16.0",
     "react-dom": "^0.14 || ^15.0 || ^16.0",
     "vis": "^4.21.0",
-    "timeline-plus": "^2.3.6"
+    "timeline-plus": "^2.4.0"
   }
 }
