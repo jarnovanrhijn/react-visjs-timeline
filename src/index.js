@@ -1,4 +1,4 @@
-import * as vis from 'timeline-plus'
+import * as TimelinePlus from 'timeline-plus'
 
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
@@ -75,7 +75,12 @@ export default class Timeline extends Component {
     const { container } = this
     const { items, groups, options } = this.props
 
-    this.$el = new vis.Timeline(container.current, items, groups, options)
+    this.$el = new TimelinePlus.Timeline(
+      container.current,
+      items,
+      groups,
+      options
+    )
 
     this.init()
   }
@@ -85,7 +90,7 @@ export default class Timeline extends Component {
       items,
       groups,
       options,
-      selection,
+      selection = [],
       selectionOptions = {},
       customTimes,
     } = this.props
@@ -185,7 +190,7 @@ export default class Timeline extends Component {
     this.$el.setOptions(timelineOptions)
 
     if (groups.length > 0) {
-      const groupsDataset = new vis.DataSet()
+      const groupsDataset = new TimelinePlus.DataSet()
       groupsDataset.add(groups)
       this.$el.setGroups(groupsDataset)
     }
@@ -264,7 +269,6 @@ Timeline.propTypes = {
   items: PropTypes.arrayOf(PropTypes.object),
   groups: PropTypes.arrayOf(PropTypes.object),
   options: PropTypes.objectOf(PropTypes.any),
-  selection: PropTypes.oneOf([PropTypes.array, PropTypes.object]),
   customTimes: PropTypes.shape({
     datetime: PropTypes.instanceOf(Date),
     id: PropTypes.string,

@@ -37,9 +37,7 @@ var _createClass = (function() {
 
 var _timelinePlus = require('timeline-plus')
 
-var vis = _interopRequireWildcard(_timelinePlus)
-
-require('timeline-plus/dist/timeline.css')
+var TimelinePlus = _interopRequireWildcard(_timelinePlus)
 
 var _react = require('react')
 
@@ -223,7 +221,12 @@ var Timeline = (function(_Component) {
           groups = _props.groups,
           options = _props.options
 
-        this.$el = new vis.Timeline(container.current, items, groups, options)
+        this.$el = new TimelinePlus.Timeline(
+          container.current,
+          items,
+          groups,
+          options
+        )
 
         this.init()
       },
@@ -235,20 +238,22 @@ var Timeline = (function(_Component) {
           items = _props2.items,
           groups = _props2.groups,
           options = _props2.options,
-          selection = _props2.selection,
+          _props2$selection = _props2.selection,
+          selection = _props2$selection === undefined ? [] : _props2$selection,
           _props2$selectionOpti = _props2.selectionOptions,
           selectionOptions =
             _props2$selectionOpti === undefined ? {} : _props2$selectionOpti,
           customTimes = _props2.customTimes
 
-        var itemsChanged = !(0, _isEqual2.default)(
-          items.sort(),
-          nextProps.items.sort()
-        )
         var oldStart = options.start
         var oldEnd = options.end
         var newStart = nextProps.options.start
         var newEnd = nextProps.options.end
+
+        var itemsChanged = !(0, _isEqual2.default)(
+          items.sort(),
+          nextProps.items.sort()
+        )
         var groupsChange = !(0, _isEqual2.default)(groups, nextProps.groups)
         var optionsChange = optionsDiffer(options, nextProps.options)
 
@@ -355,7 +360,7 @@ var Timeline = (function(_Component) {
         this.$el.setOptions(timelineOptions)
 
         if (groups.length > 0) {
-          var groupsDataset = new vis.DataSet()
+          var groupsDataset = new TimelinePlus.DataSet()
           groupsDataset.add(groups)
           this.$el.setGroups(groupsDataset)
         }
@@ -460,10 +465,6 @@ Timeline.propTypes = _extends(
     items: _propTypes2.default.arrayOf(_propTypes2.default.object),
     groups: _propTypes2.default.arrayOf(_propTypes2.default.object),
     options: _propTypes2.default.objectOf(_propTypes2.default.any),
-    selection: _propTypes2.default.oneOf([
-      _propTypes2.default.array,
-      _propTypes2.default.object,
-    ]),
     customTimes: _propTypes2.default.shape({
       datetime: _propTypes2.default.instanceOf(Date),
       id: _propTypes2.default.string,

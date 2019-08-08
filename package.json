@@ -1,6 +1,6 @@
 {
   "name": "react-visjs-timeline",
-  "version": "1.6.4",
+  "version": "1.6.5",
   "description": "React component for the vis.js timeline module",
   "main": "build/index.js",
   "scripts": {
