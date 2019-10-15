@@ -12,9 +12,19 @@ const basicExample = {
     { id: 1, content: 'item 1', start: '2014-04-20' },
     { id: 2, content: 'item 2', start: '2014-04-14' },
     { id: 3, content: 'item 3', start: '2014-04-18' },
-    { id: 4, content: 'item 4', start: '2014-04-16', end: '2014-04-19' },
+    {
+      id: 4,
+      content: 'item 4',
+      start: '2014-04-16',
+      end: '2014-04-19',
+    },
     { id: 5, content: 'item 5', start: '2014-04-25' },
-    { id: 6, content: 'item 6', start: '2014-04-27', type: 'point' },
+    {
+      id: 6,
+      content: 'item 6',
+      start: '2014-04-27',
+      type: 'point',
+    },
   ],
 }
 
@@ -45,14 +55,9 @@ for (let i = 0; i < itemCount; i++) {
   const group = Math.floor(Math.random() * groupCount)
   groupsExample.items.push({
     id: i,
-    group: group,
-    content:
-      'item ' +
-      i +
-      ' <span style="color:#97B0F8">(' +
-      names[group] +
-      ')</span>',
-    start: start,
+    group,
+    content: `item ${i} <span style="color:#97B0F8">(${names[group]})</span>`,
+    start,
     type: 'box',
   })
 }
@@ -64,6 +69,16 @@ class App extends Component {
     this.state = {
       selectedIds: [],
     }
+  }
+
+  clickHandler(props) {
+    const { group } = props
+    const selectedIds = groupsExample.items
+      .filter(item => item.group === group)
+      .map(item => item.id)
+    this.setState({
+      selectedIds,
+    })
   }
 
   render() {
@@ -86,16 +101,6 @@ class App extends Component {
         />
       </div>
     )
-  }
-
-  clickHandler(props) {
-    const { group } = props
-    const selectedIds = groupsExample.items
-      .filter(item => item.group === group)
-      .map(item => item.id)
-    this.setState({
-      selectedIds,
-    })
   }
 }
 
