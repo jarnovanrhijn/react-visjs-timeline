@@ -35,9 +35,9 @@ var _createClass = (function() {
   }
 })()
 
-var _timelinePlus = require('timeline-plus')
+var _visTimeline = require('vis-timeline')
 
-var TimelinePlus = _interopRequireWildcard(_timelinePlus)
+var TimelinePlus = _interopRequireWildcard(_visTimeline)
 
 var _react = require('react')
 
