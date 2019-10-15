@@ -1,4 +1,4 @@
-import * as TimelinePlus from 'vis-timeline'
+import * as TimelinePlus from 'timeline-plus'
 
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
